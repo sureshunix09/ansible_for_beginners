@@ -1,0 +1,41 @@
+---
+- name: Setup tomcat
+  hosts: all
+  become: true
+  tasks:
+  - name: install java on redhat
+    yum:
+      name: java
+      state: installed
+    when: ansible_os_family == "RedHat"
+
+
+  - name: install java on ubuntu
+    apt:
+      pkg: oracle-java7-installer
+      state: present
+    when: ansible_os_family == "Debian"
+    ignore_errors: yes
+
+  - name: Downlaod Tomcat 
+    get_url:
+       url: https://mirror.csclub.uwaterloo.ca/apache/tomcat/tomcat-8/v8.5.60/bin/apache-tomcat-8.5.60.tar.gz 
+       dest: /opt
+
+  - name: Untar apache packages
+    unarchive:
+      src: /opt/apache-tomcat-8.5.60.tar.gz
+      dest: /opt
+      remote_src: yes
+      tags: untar
+
+  - name: Add execution permission on startup.sh file
+    file:
+      path: /opt/apache-tomcat-8.5.60/bin/startup.sh
+      mode: 0777
+
+  - name: Start tomcat services
+    shell: nohup ./startup.sh
+    args:
+      chdir: /opt/apache-tomcat-8.5.60/bin
+

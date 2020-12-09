@@ -1,0 +1,9 @@
+---
+- name: test ansible vault
+  hosts: all
+  become: true
+  tasks:
+  - name: Clone a repo
+    git:
+      repo: https://sureshunix09:Emergency@123@github.com/sureshunix09/vault.git
+      dest: /opt/testvault
